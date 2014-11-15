@@ -2,141 +2,83 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
-		
-	ofEnableAlphaBlending(); //“§–¾“x(ƒAƒ‹ƒtƒ@ƒ`ƒƒƒ“ƒlƒ‹)‚ğ—LŒø‚É‚·‚é
-	ofSetCircleResolution(64); //‰~‚Ì‰ğ‘œ“x‚ğİ’è
-	ofSetFrameRate(120); //ƒtƒŒ[ƒ€ƒŒ[ƒg‚Ìİ’è
 
+  ofEnableAlphaBlending(); //é€æ˜åº¦(ã‚¢ãƒ«ãƒ•ã‚¡ãƒãƒ£ãƒ³ãƒãƒ«)ã‚’æœ‰åŠ¹ã«ã™ã‚‹
+  ofSetCircleResolution(64); //å††ã®è§£åƒåº¦ã‚’è¨­å®š
+  ofSetFrameRate(120); //ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¬ãƒ¼ãƒˆã®è¨­å®š
 
-    //w’è‚µ‚½ƒ|[ƒg‚ÅÚ‘±
-    receiver.setup( PORT_receive );
-	
-	//ofBackground(0, 0, 0);
+  //æŒ‡å®šã—ãŸãƒãƒ¼ãƒˆã§æ¥ç¶š
+  receiver.setup( PORT_receive );
 
-	//w’è‚µ‚½IPƒAƒhƒŒƒX‚Æƒ|[ƒg”Ô†‚ÅƒT[ƒo[‚ÉÚ‘±
-    sender.setup( HOST, PORT_send1 );
-	//sender2.setup( HOST, PORT_send2 );
+  //æŒ‡å®šã—ãŸIPã‚¢ãƒ‰ãƒ¬ã‚¹ã¨ãƒãƒ¼ãƒˆç•ªå·ã§ã‚µãƒ¼ãƒãƒ¼ã«æ¥ç¶š
+  sender.setup( HOST, PORT_send1 );
 
-	 // ƒVƒŠƒAƒ‹’ÊMŠJn
-    serial.setup("COM4",9600);
+  // ã‚·ãƒªã‚¢ãƒ«é€šä¿¡é–‹å§‹
+  serial.setup("COM4",9600);
 
-	//ofBackground(200,200, 200); //”wŒiF‚Ìİ’è
-     
-	//•Ï”‰Šú‰»
-	p1_x=0;
-	p1_z=0;
-	pos_z= 0;
-	pos_x= 0;
-	serial1=0;
+  //å¤‰æ•°åˆæœŸåŒ–
+  p1_x=0;
+  p1_z=0;
+  pos_z= 0;
+  pos_x= 0;
+  serial1=0;
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
+  //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®å—ã‘å–ã‚Š
+  ofxOscMessage m;
 
-	
-	
+  //ç¾åœ¨é †ç•ªå¾…ã¡ã®OSCãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãŒã‚ã‚‹ã‹ç¢ºèª
+  while( receiver.hasWaitingMessages()){
+    receiver.getNextMessage( &m );
 
-	
-	
+    if ( m.getAddress() == "/p1_x" ){
+      p1_x = m.getArgAsFloat( 0 );
 
-	 //ƒƒbƒZ[ƒW‚Ìó‚¯æ‚è
-	ofxOscMessage m;
-
-    //Œ»İ‡”Ô‘Ò‚¿‚ÌOSCƒƒbƒZ[ƒW‚ª‚ ‚é‚©Šm”F
-    while( receiver.hasWaitingMessages() )
-    {
-        //Ÿ‚ÌƒƒbƒZ[ƒW‚ğæ“¾
-        
-        receiver.getNextMessage( &m );
-
-		if ( m.getAddress() == "/p1_x" ){
-			 p1_x = m.getArgAsFloat( 0 );
-
-			 if(p1_x>0){
-			// cout<<"0ˆÈã"<<endl;
-			 
-			 }
-            // cout<<p1_x<<"’l"<<endl;
-        }
-
-		else if ( m.getAddress() == "/p1_z" ){
-			
-	
-			p1_z = m.getArgAsFloat( 0 );
-			
-			if(p1_z>2){
-				cout<<"2mˆÈã"<<endl;
-				pos_z=2;
-				int numSent = serial.writeByte(1);
-			 }
-
-			else{
-				pos_z=0;
-				cout<<"2mˆÈ‰º"<<endl;
-				int numSent = serial.writeByte(0);
-			}
-
-         
-        }
-
-	}
-
-	
-        //OSCƒƒbƒZ[ƒW‚ğ‚»‚Ì‚Ü‚ÜƒRƒ“ƒ\[ƒ‹‚Éo—Í
-      //dumpOSC(m);
-
-///////////////////////////////////////////////////////////////////////////
-
-	  //ƒƒbƒZ[ƒW‚Ì‘—M
-
-	
-    //OSCƒƒbƒZ[ƒW‚Ì€”õ
-   // ofxOscMessage m;
-    //OSCƒAƒhƒŒƒX‚Ìw’è
-    m.setAddress( "/motor_v1" );
-    m.addFloatArg( pos_z );
- 
-    //ƒƒbƒZ[ƒW‚ğ‘—M
-    sender.sendMessage( m );
-
-	 //OSCƒAƒhƒŒƒX‚Ìw’è
-    m.setAddress( "/motor_v2" );
-    m.addFloatArg( pos_z );
- 
-    //ƒƒbƒZ[ƒW‚ğ‘—M
-    sender.sendMessage( m );
-
-
-  //noteoff
-	/*
-	//OSCƒAƒhƒŒƒX‚Ìw’è
-    m.setAddress( "/midi/noteoff" );
-    //OSCˆø”‚Æ‚µ‚ÄAŒ»İ‚Ìƒ}ƒEƒX‚ÌÀ•W(x, y)‚ğ‘—M
-    m.addIntArg( 1 );
-    m.addIntArg( x/10 );
-	m.addIntArg( y/10 );
-    //ƒƒbƒZ[ƒW‚ğ‘—M
-    sender.sendMessage( m );
-	*/
-////////////////////////////////////////////////////////////////////////////////
-
-
-
-}
-//OSCƒƒbƒZ[ƒW‚ğƒRƒ“ƒ\[ƒ‹‚Éo—Í‚·‚éŠÖ”
-void testApp::dumpOSC(ofxOscMessage m) {
-    string msg_string;
-    msg_string = m.getAddress();
-    for (int i=0; i<m.getNumArgs(); i++ ) {
-        msg_string += " ";
-        if(m.getArgType(i) == OFXOSC_TYPE_INT32)
-            msg_string += ofToString( m.getArgAsInt32(i));
-        else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
-            msg_string += ofToString( m.getArgAsFloat(i));
-        else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
-            msg_string += m.getArgAsString(i);
+      if(p1_x>0){
+        // cout<<"0ä»¥ä¸Š"<<endl;
+      }
+      // cout<<p1_x<<"å€¤"<<endl;
     }
-    cout << msg_string << endl;    
+    else if ( m.getAddress() == "/p1_z" ){
+      p1_z = m.getArgAsFloat( 0 );
+      if(p1_z>2){
+        cout<<"2mä»¥ä¸Š"<<endl;
+        pos_z=2;
+        int numSent = serial.writeByte(1);
+      } else {  
+        pos_z=0;
+        cout<<"2mä»¥ä¸‹"<<endl;
+        int numSent = serial.writeByte(0);
+      }
+    }
+  }
+
+  //ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®é€ä¿¡
+
+  m.setAddress( "/motor_v1" );
+  m.addFloatArg( pos_z );
+  sender.sendMessage( m );
+
+  m.setAddress( "/motor_v2" );
+  m.addFloatArg( pos_z );
+  sender.sendMessage( m );
+}
+//OSCãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ã‚³ãƒ³ã‚½ãƒ¼ãƒ«ã«å‡ºåŠ›ã™ã‚‹é–¢æ•°
+void testApp::dumpOSC(ofxOscMessage m) {
+  string msg_string;
+  msg_string = m.getAddress();
+  for (int i=0; i<m.getNumArgs(); i++ ) {
+    msg_string += " ";
+    if(m.getArgType(i) == OFXOSC_TYPE_INT32)
+      msg_string += ofToString( m.getArgAsInt32(i));
+    else if(m.getArgType(i) == OFXOSC_TYPE_FLOAT)
+      msg_string += ofToString( m.getArgAsFloat(i));
+    else if(m.getArgType(i) == OFXOSC_TYPE_STRING)
+      msg_string += m.getArgAsString(i);
+  }
+  cout << msg_string << endl;    
 }
 //--------------------------------------------------------------
 void testApp::draw(){

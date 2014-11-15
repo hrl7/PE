@@ -3,55 +3,48 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "ofEvents.h"
- 
-#define HOST "localhost" //‘—MæƒzƒXƒg‚ÌIP‚ğİ’è
-//ƒ|[ƒg”Ô†‚ğİ’è
+
+#define HOST "localhost" //é€ä¿¡å…ˆãƒ›ã‚¹ãƒˆã®IPã‚’è¨­å®š
+//ãƒãƒ¼ãƒˆç•ªå·ã‚’è¨­å®š
 #define PORT_receive 7000
-#define PORT_send1 5001 //‘—Mæ‚Ìƒ|[ƒg”Ô†‚ğİ’è
-#define PORT_send22 8000 //‘—Mæ‚Ìƒ|[ƒg”Ô†‚ğİ’è 
-
-
+#define PORT_send1 5001 //é€ä¿¡å…ˆã®ãƒãƒ¼ãƒˆç•ªå·ã‚’è¨­å®š
+#define PORT_send22 8000 //é€ä¿¡å…ˆã®ãƒãƒ¼ãƒˆç•ªå·ã‚’è¨­å®š 
 
 class testApp : public ofBaseApp{
 
-	public:
-		void setup();
-		void update();
-		void draw();
+  public:
+    void setup();
+    void update();
+    void draw();
 
-		void keyPressed  (int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		void dumpOSC(ofxOscMessage m); //OSCƒƒbƒZ[ƒW‚ğo—Í
+    void keyPressed  (int key);
+    void keyReleased(int key);
+    void mouseMoved(int x, int y );
+    void mouseDragged(int x, int y, int button);
+    void mousePressed(int x, int y, int button);
+    void mouseReleased(int x, int y, int button);
+    void windowResized(int w, int h);
+    void dragEvent(ofDragInfo dragInfo);
+    void gotMessage(ofMessage msg);
+    void dumpOSC(ofxOscMessage m); //OSCãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡ºåŠ›
 
-//////////////////////////////////•Ï”éŒ¾//////////////
+    //////////////////////////////////å¤‰æ•°å®£è¨€//////////////
 
-		float p1_x;
-		float p1_z;
+    float p1_x;
+    float p1_z;
 
-		float pos_z;
-		float pos_x;
+    float pos_z;
+    float pos_x;
 
-		
-	unsigned char serial1;
+    unsigned char serial1;
 
-
-
-private:
-
-	 //OSCƒƒbƒZ[ƒW‚ğóM‚·‚éƒCƒ“ƒXƒ^ƒ“ƒX
+  private:
+    //OSCãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å—ä¿¡ã™ã‚‹ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
     ofxOscReceiver    receiver;
-	 //OSCƒƒbƒZ[ƒW‚Ì‘—MÒ
+    //OSCãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã®é€ä¿¡è€…
     ofxOscSender sender;
-	//ofxOscSender sender2;
 
-	//ƒVƒŠƒAƒ‹’ÊMƒCƒ“ƒXƒ^ƒ“ƒX
-	ofSerial serial;
+    //ã‚·ãƒªã‚¢ãƒ«é€šä¿¡ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹
+    ofSerial serial;
 };
 
