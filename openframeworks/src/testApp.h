@@ -4,11 +4,11 @@
 #include "ofxOsc.h"
 #include "ofEvents.h"
 
-#define HOST "localhost" //送信先ホストのIPを設定
-//ポート番号を設定
+#define HOST "localhost" //ÈÄÅ‰ø°ÂÖà„Éõ„Çπ„Éà„ÅÆIP„ÇíË®≠ÂÆö
+//„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö
 #define PORT_receive 7000
-#define PORT_send1 5001 //送信先のポート番号を設定
-#define PORT_send22 8000 //送信先のポート番号を設定 
+#define PORT_send1 5001 //ÈÄÅ‰ø°ÂÖà„ÅÆ„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö
+#define PORT_send22 8000 //ÈÄÅ‰ø°ÂÖà„ÅÆ„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö 
 
 class testApp : public ofBaseApp{
 
@@ -26,9 +26,11 @@ class testApp : public ofBaseApp{
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    void dumpOSC(ofxOscMessage m); //OSCメッセージを出力
-
-    //////////////////////////////////変数宣言//////////////
+    void dumpOSC(ofxOscMessage m); //OSC„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá∫Âäõ
+    void sendMotorDegrees(float angle1, float angle2, float angle3, float angle4);
+    void sendVelocityToMotor(int speed);
+    int readMotorAngle();
+    //////////////////////////////////Â§âÊï∞ÂÆ£Ë®Ä//////////////
 
     float p1_x;
     float p1_z;
@@ -38,13 +40,12 @@ class testApp : public ofBaseApp{
 
     unsigned char serial1;
 
-  private:
-    //OSCメッセージを受信するインスタンス
+    //OSC„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂèó‰ø°„Åô„Çã„Ç§„É≥„Çπ„Çø„É≥„Çπ
     ofxOscReceiver    receiver;
-    //OSCメッセージの送信者
+    //OSC„É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÈÄÅ‰ø°ËÄÖ
     ofxOscSender sender;
 
-    //シリアル通信インスタンス
+    //„Ç∑„É™„Ç¢„É´ÈÄö‰ø°„Ç§„É≥„Çπ„Çø„É≥„Çπ
     ofSerial serial;
 };
 

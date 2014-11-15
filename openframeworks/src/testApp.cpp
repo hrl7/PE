@@ -14,7 +14,13 @@ void testApp::setup(){
   sender.setup( HOST, PORT_send1 );
 
   // シリアル通信開始
-  serial.setup("COM4",9600);
+  vector<ofSerialDeviceInfo> devices = serial.getDeviceList();
+  for (int i = 0; i < devices.size(); i++) {
+    cout << i << " : " << devices[i].getDeviceName() << endl;
+  }
+
+  serial.setup(0,9600);
+  //serial.setup("COM4",9600);
 
   //変数初期化
   p1_x=0;
@@ -28,7 +34,6 @@ void testApp::setup(){
 void testApp::update(){
   //メッセージの受け取り
   ofxOscMessage m;
-
   //現在順番待ちのOSCメッセージがあるか確認
   while( receiver.hasWaitingMessages()){
     receiver.getNextMessage( &m );
@@ -46,25 +51,69 @@ void testApp::update(){
       if(p1_z>2){
         cout<<"2m以上"<<endl;
         pos_z=2;
-        int numSent = serial.writeByte(1);
+        serial.writeByte(1);
       } else {  
         pos_z=0;
         cout<<"2m以下"<<endl;
-        int numSent = serial.writeByte(0);
+        serial.writeByte(0);
       }
     }
   }
 
-  //メッセージの送信
+  float angle1 =  360 * readMotorAngle() / 1600.;
+  float angle2 =  360 * readMotorAngle() / 1600.;
+  float angle3 =  360 * readMotorAngle() / 1600.;
+  float angle4 =  360 * readMotorAngle() / 1600.;
 
-  m.setAddress( "/motor_v1" );
-  m.addFloatArg( pos_z );
-  sender.sendMessage( m );
-
-  m.setAddress( "/motor_v2" );
-  m.addFloatArg( pos_z );
-  sender.sendMessage( m );
+  sendMotorDegrees(angle1,angle2,angle3,angle4);
 }
+
+/**
+  this method may return error value : -1.
+  */
+int testApp::readMotorAngle(){
+  int result = -1;
+
+  while ( serial.available() > 3 ) {
+    int i=4;
+    while(i > 0){
+      int buf = serial.readByte();
+      if(buf != 0xff){
+        result = result << 8 | buf;
+        i--;
+      } else {
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+void testApp::sendMotorDegrees(float angle1, float angle2, float angle3, float angle4){
+  ofxOscMessage m;
+  if(angle1 > 0){
+    m.setAddress( "/motor_v1" );
+    m.addFloatArg( angle1 );
+    sender.sendMessage( m );
+  }
+
+  if(angle2 > 0){
+    m.setAddress( "/motor_v2" );
+    m.addFloatArg( angle2 );
+    sender.sendMessage( m );
+  }
+  if(angle3 > 0){
+    m.setAddress( "/motor_v3" );
+    m.addFloatArg( angle3 );
+    sender.sendMessage( m );
+  }
+  if(angle4 > 0){
+    m.setAddress( "/motor_v4" );
+    m.addFloatArg( angle4 );
+    sender.sendMessage( m );
+  }
+}
+
 //OSCメッセージをコンソールに出力する関数
 void testApp::dumpOSC(ofxOscMessage m) {
   string msg_string;
