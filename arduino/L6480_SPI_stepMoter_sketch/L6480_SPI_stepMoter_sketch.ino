@@ -100,13 +100,13 @@ void serialEvent(){
 void update(){
   switch(run_state){
   case 0:
-    L6470_run(1,12000);
+    L6480_run(1,12000);
     break;  
   case 1:
-    L6470_run(1,3000);
+    L6480_run(1,3000);
     break; 
   default:
-    L6470_softhiz();
+    L6480_softhiz();
   }
 }
 
