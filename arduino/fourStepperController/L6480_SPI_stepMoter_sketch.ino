@@ -11,6 +11,7 @@
 #define PIN_SPI_SCK 13
 #define PIN_SPI_SS 10
 #define PIN_BUSY 9
+
 #define MOTORS 1
 
 int run_state = 0;
@@ -24,6 +25,11 @@ void setup()
   pinMode(PIN_SPI_SCK, OUTPUT);
   pinMode(PIN_SPI_SS, OUTPUT);
   pinMode(PIN_BUSY, INPUT);
+  pinMode(0,OUTPUT);
+  pinMode(1,OUTPUT);
+  pinMode(2,OUTPUT);
+  pinMode(3,OUTPUT);
+
   digitalWrite(PIN_SPI_SS, HIGH);
   SPI.begin();
   SPI.setDataMode(SPI_MODE3);
