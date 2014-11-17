@@ -86,6 +86,7 @@ int testApp::readMotorAngle(){
       }
     }
   }
+  if(result != -1)cout << result << endl;
   return result;
 }
 
