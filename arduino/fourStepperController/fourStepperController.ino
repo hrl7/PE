@@ -95,18 +95,18 @@ void serialEvent(){
 }
 
 /**
- * update velocity
+ * update all stepper's velocity
  */
 void update(){
   switch(run_state){
   case 0:
-    L6480_run(1,12000);
+    for(int i = 0; i< MOTORS; i++)L6480_run(1,12000);
     break;  
   case 1:
-    L6480_run(1,3000);
+    for(int i = 0; i< MOTORS; i++)L6480_run(1,3000);
     break; 
   default:
-    L6480_softhiz();
+    for(int i = 0; i< MOTORS; i++)L6480_softhiz();
   }
 }
 
