@@ -264,7 +264,7 @@ void L6480_transfer(int add,int bytes,long val){
   }  
 }
 void L6480_send(unsigned char add_or_val){
-  while(!digitalRead(PIN_BUSY)){
+  while(!is_motor_busy()){
   } //BESYが解除されるまで待機
   digitalWrite(PIN_SPI_SS, LOW); // ~SSイネーブル。
   for(int i = 0; i < MOTORS; i++){
@@ -288,7 +288,7 @@ void L6480_send_u(unsigned char add_or_val){//busyを確認せず送信するた
   digitalWrite(PIN_SPI_SS, HIGH); // ~SSディスエーブル。
 }
 void L6480_busydelay(long time){//BESYが解除されるまで待機
-  while(!digitalRead(PIN_BUSY)){
+  while(!is_motor_busy()){
   }
   delay(time);
 }
@@ -312,5 +312,7 @@ long L6480_getparam(int add,int bytes){
   return val;
 }
 
-
+boolean is_motor_busy(){
+ return digitalRead(selectedMotor); 
+}
 
