@@ -27,9 +27,9 @@ class testApp : public ofBaseApp{
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     void dumpOSC(ofxOscMessage m); //OSC„É°„ÉÉ„Çª„Éº„Ç∏„ÇíÂá∫Âäõ
-    void sendMotorDegrees(float angle1, float angle2, float angle3, float angle4);
+    void sendMotorAngle(int motorId, int degree);
     void sendVelocityToMotor(int speed);
-    int readMotorAngle();
+    void receiveMotorAngleAndSendToGrassHopper();
     //////////////////////////////////Â§âÊï∞ÂÆ£Ë®Ä//////////////
 
     float p1_x;

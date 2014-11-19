@@ -60,71 +60,45 @@ void testApp::update(){
     }
   }
 
-  float angle1 =  360 * readMotorAngle() / 1600.;
-  float angle2 =  360 * readMotorAngle() / 1600.;
-  float angle3 =  360 * readMotorAngle() / 1600.;
-  float angle4 =  360 * readMotorAngle() / 1600.;
-
-  sendMotorDegrees(angle1,angle2,angle3,angle4);
+    receiveMotorAngleAndSendToGrassHopper();
 }
 
-/**
-  this method may return error value : -1.
-  */
-int testApp::readMotorAngle(){
-     int nBytesRead = 0;
-    char bytesReadString[4];
-    
-    nBytesRead = 0;
-    int nRead = 0;
-    char bytesRead[3];
-    unsigned char bytesReturned[3];
-    
-    memset(bytesReturned, 0, 3);
-    memset(bytesReadString, 0, 4);
-    
-    
-    while ((nRead = serial.readBytes(bytesReturned, 3)) > 0) {
+void testApp::receiveMotorAngleAndSendToGrassHopper(){
+    int initCount = 0;
+    int buf = 0;
+    int motorId = 0;
+    int position = 0;
+    bool isFirst = true;
+    while (serial.available() > 0) {
+        buf = serial.readByte();
         
-        nBytesRead = nRead;
-    };
-    
-    if (nBytesRead > 0) {
-        
-        memcpy(bytesReadString, bytesReturned, 3);
-        string x = bytesReadString;
-        cout << "Bytes :" << nBytesRead << endl << bytesReturned << endl;
+        if(buf == 0xff){
+            initCount++;
+        } else if(initCount != 2) {
+            return ;
+        } else {
+            if(isFirst){
+                position = (0x03 & buf) << 7;
+                motorId = buf >> 3;
+                //cout << "Position :" << static_cast<std::bitset<9> >(position) << endl;
 
+                isFirst = false;
+            } else {
+                position = position | (buf >> 1);
+                
+                cout << "Motor : #" << motorId << "  Position : " << position << endl;
+                
+                sendMotorAngle(motorId,position);
+            }
+        }
     }
-  }
-  if(result != -1)cout << static_cast<std::bitset<8> >(result) << endl;
-  return result;
-
 }
 
-void testApp::sendMotorDegrees(float angle1, float angle2, float angle3, float angle4){
+void testApp::sendMotorAngle(int motorId, int angle){
   ofxOscMessage m;
-  if(angle1 > 0){
-    m.setAddress( "/motor_v1" );
-    m.addFloatArg( angle1 );
+    m.setAddress( "/motor_v" + ofToString(motorId) );
+    m.addFloatArg( angle );
     sender.sendMessage( m );
-  }
-
-  if(angle2 > 0){
-    m.setAddress( "/motor_v2" );
-    m.addFloatArg( angle2 );
-    sender.sendMessage( m );
-  }
-  if(angle3 > 0){
-    m.setAddress( "/motor_v3" );
-    m.addFloatArg( angle3 );
-    sender.sendMessage( m );
-  }
-  if(angle4 > 0){
-    m.setAddress( "/motor_v4" );
-    m.addFloatArg( angle4 );
-    sender.sendMessage( m );
-  }
 }
 
 //OSC„É°„ÉÉ„Çª„Éº„Ç∏„Çí„Ç≥„É≥„ÇΩ„Éº„É´„Å´Âá∫Âäõ„Åô„ÇãÈñ¢Êï∞
