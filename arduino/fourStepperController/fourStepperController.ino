@@ -5,7 +5,6 @@
 
 #include <SPI.h>
 
-// ピン定義。
 #define PIN_SPI_MOSI 11
 #define PIN_SPI_MISO 12
 #define PIN_SPI_SCK 13
@@ -56,12 +55,16 @@ void setup()
 
 void loop(){
   for(int i = 0; i< MOTORS; i++){
+    L6480_getstatus();
+    /*
     Serial.print("#");
-    Serial.print(i);
-    Serial.print(" : ");
-    Serial.print(L6480_getstatus(),HEX);
-    Serial.print("  ");
-    Serial.println(L6480_getparam_adcout(),HEX);
+     Serial.print(i);
+     Serial.print(" : ");
+     Serial.print(L6480_getstatus(),HEX);
+     Serial.print("  ");
+     Serial.println(L6480_getparam_adcout(),HEX);
+     */
+    send_pos(i,map(L6480_getparam_abspos() / 1600,0,1600,0,360));  
   }
   delay(1000);
 }
@@ -119,14 +122,15 @@ void update(){
 
 
 /**
-  Send motor_id and position(0~1023) with Serial
-  | 0xff | 0xff | (Motor_id 0~f)0xX 0b00  (degree 9bit)0xXX 0b0 |
-*/
+ * Send motor_id and position(0~1023) with Serial
+ * | 0xff | 0xff | (Motor_id 0~f)0xX 0b00  (degree 9bit)0xXX 0b0 |
+ */
 void send_pos(int motor_id,int pos){
   int buf = motor_id << 3;
-  buf = buf | pos >> 8;
+  buf = buf | pos >> 7;
   Serial.write(0xff);
   Serial.write(0xff);
   Serial.write(buf);
- Serial.write(0xff & (pos << 1)); 
+  Serial.write(0xff & (pos << 1)); 
 }
+
