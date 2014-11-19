@@ -12,7 +12,8 @@
 #define PIN_SPI_SS 10
 #define PIN_BUSY 9
 
-#define MOTORS 1
+
+#define MOTORS 4
 
 int run_state = 0;
 
@@ -101,20 +102,31 @@ void serialEvent(){
 }
 
 /**
- * update velocity
+ * update all stepper's velocity
  */
 void update(){
   switch(run_state){
   case 0:
-    L6480_run(1,12000);
+    for(int i = 0; i< MOTORS; i++)L6480_run(1,12000);
     break;  
   case 1:
-    L6480_run(1,3000);
+    for(int i = 0; i< MOTORS; i++)L6480_run(1,3000);
     break; 
   default:
-    L6480_softhiz();
+    for(int i = 0; i< MOTORS; i++)L6480_softhiz();
   }
 }
 
 
-
+/**
+  Send motor_id and position(0~1023) with Serial
+  | 0xff | 0xff | (Motor_id 0~f)0xX 0b00  (degree 9bit)0xXX 0b0 |
+*/
+void send_pos(int motor_id,int pos){
+  int buf = motor_id << 3;
+  buf = buf | pos >> 8;
+  Serial.write(0xff);
+  Serial.write(0xff);
+  Serial.write(buf);
+ Serial.write(0xff & (pos << 1)); 
+}

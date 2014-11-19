@@ -3,17 +3,17 @@
 //--------------------------------------------------------------
 void testApp::setup(){
 
-  ofEnableAlphaBlending(); //透明度(アルファチャンネル)を有効にする
-  ofSetCircleResolution(64); //円の解像度を設定
-  ofSetFrameRate(120); //フレームレートの設定
+  ofEnableAlphaBlending(); //ÈÄèÊòéÂ∫¶(„Ç¢„É´„Éï„Ç°„ÉÅ„É£„É≥„Éç„É´)„ÇíÊúâÂäπ„Å´„Åô„Çã
+  ofSetCircleResolution(64); //ÂÜÜ„ÅÆËß£ÂÉèÂ∫¶„ÇíË®≠ÂÆö
+  ofSetFrameRate(120); //„Éï„É¨„Éº„É†„É¨„Éº„Éà„ÅÆË®≠ÂÆö
 
-  //指定したポートで接続
+  //ÊåáÂÆö„Åó„Åü„Éù„Éº„Éà„ÅßÊé•Á∂ö
   receiver.setup( PORT_receive );
 
-  //指定したIPアドレスとポート番号でサーバーに接続
+  //ÊåáÂÆö„Åó„ÅüIP„Ç¢„Éâ„É¨„Çπ„Å®„Éù„Éº„ÉàÁï™Âè∑„Åß„Çµ„Éº„Éê„Éº„Å´Êé•Á∂ö
   sender.setup( HOST, PORT_send1 );
 
-  // シリアル通信開始
+  // „Ç∑„É™„Ç¢„É´ÈÄö‰ø°ÈñãÂßã
   vector<ofSerialDeviceInfo> devices = serial.getDeviceList();
   for (int i = 0; i < devices.size(); i++) {
     cout << i << " : " << devices[i].getDeviceName() << endl;
@@ -22,7 +22,7 @@ void testApp::setup(){
   serial.setup(0,9600);
   //serial.setup("COM4",9600);
 
-  //変数初期化
+  //Â§âÊï∞ÂàùÊúüÂåñ
   p1_x=0;
   p1_z=0;
   pos_z= 0;
@@ -32,9 +32,9 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
-  //メッセージの受け取り
+  //„É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂèó„ÅëÂèñ„Çä
   ofxOscMessage m;
-  //現在順番待ちのOSCメッセージがあるか確認
+  //ÁèæÂú®È†ÜÁï™ÂæÖ„Å°„ÅÆOSC„É°„ÉÉ„Çª„Éº„Ç∏„Åå„ÅÇ„Çã„ÅãÁ¢∫Ë™ç
   while( receiver.hasWaitingMessages()){
     receiver.getNextMessage( &m );
 
@@ -42,19 +42,19 @@ void testApp::update(){
       p1_x = m.getArgAsFloat( 0 );
 
       if(p1_x>0){
-        // cout<<"0以上"<<endl;
+        // cout<<"0‰ª•‰∏ä"<<endl;
       }
-      // cout<<p1_x<<"値"<<endl;
+      // cout<<p1_x<<"ÂÄ§"<<endl;
     }
     else if ( m.getAddress() == "/p1_z" ){
       p1_z = m.getArgAsFloat( 0 );
       if(p1_z>2){
-        cout<<"2m以上"<<endl;
+        cout<<"2m‰ª•‰∏ä"<<endl;
         pos_z=2;
         serial.writeByte(1);
       } else {  
         pos_z=0;
-        cout<<"2m以下"<<endl;
+        cout<<"2m‰ª•‰∏ã"<<endl;
         serial.writeByte(0);
       }
     }
@@ -72,22 +72,34 @@ void testApp::update(){
   this method may return error value : -1.
   */
 int testApp::readMotorAngle(){
-  int result = -1;
+     int nBytesRead = 0;
+    char bytesReadString[4];
+    
+    nBytesRead = 0;
+    int nRead = 0;
+    char bytesRead[3];
+    unsigned char bytesReturned[3];
+    
+    memset(bytesReturned, 0, 3);
+    memset(bytesReadString, 0, 4);
+    
+    
+    while ((nRead = serial.readBytes(bytesReturned, 3)) > 0) {
+        
+        nBytesRead = nRead;
+    };
+    
+    if (nBytesRead > 0) {
+        
+        memcpy(bytesReadString, bytesReturned, 3);
+        string x = bytesReadString;
+        cout << "Bytes :" << nBytesRead << endl << bytesReturned << endl;
 
-  while ( serial.available() > 3 ) {
-    int i=4;
-    while(i > 0){
-      int buf = serial.readByte();
-      if(buf != 0xff){
-        result = result << 8 | buf;
-        i--;
-      } else {
-        break;
-      }
     }
   }
   if(result != -1)cout << static_cast<std::bitset<8> >(result) << endl;
   return result;
+
 }
 
 void testApp::sendMotorDegrees(float angle1, float angle2, float angle3, float angle4){
@@ -115,7 +127,7 @@ void testApp::sendMotorDegrees(float angle1, float angle2, float angle3, float a
   }
 }
 
-//OSCメッセージをコンソールに出力する関数
+//OSC„É°„ÉÉ„Çª„Éº„Ç∏„Çí„Ç≥„É≥„ÇΩ„Éº„É´„Å´Âá∫Âäõ„Åô„ÇãÈñ¢Êï∞
 void testApp::dumpOSC(ofxOscMessage m) {
   string msg_string;
   msg_string = m.getAddress();
