@@ -12,7 +12,7 @@
 #define PIN_BUSY 9
 
 
-#define MOTORS 4
+#define MOTORS 1
 
 int run_state = 0;
 
@@ -56,15 +56,15 @@ void setup()
 void loop(){
   for(int i = 0; i< MOTORS; i++){
     L6480_getstatus();
-    /*
+    
     Serial.print("#");
      Serial.print(i);
      Serial.print(" : ");
      Serial.print(L6480_getstatus(),HEX);
      Serial.print("  ");
      Serial.println(L6480_getparam_adcout(),HEX);
-     */
-    send_pos(i,map(L6480_getparam_abspos() / 1600,0,1600,0,360));  
+     
+   // send_pos(i,map(L6480_getparam_abspos() / 1600,0,1600,0,360));  
   }
   delay(1000);
 }
@@ -133,4 +133,3 @@ void send_pos(int motor_id,int pos){
   Serial.write(buf);
   Serial.write(0xff & (pos << 1)); 
 }
-
