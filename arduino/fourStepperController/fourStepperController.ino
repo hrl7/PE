@@ -12,7 +12,7 @@
 #define PIN_BUSY 9
 
 
-#define MOTORS 1
+#define MOTORS 4
 
 int run_state = 0;
 
@@ -25,10 +25,10 @@ void setup()
   pinMode(PIN_SPI_SCK, OUTPUT);
   pinMode(PIN_SPI_SS, OUTPUT);
   pinMode(PIN_BUSY, INPUT);
-  pinMode(0,OUTPUT);
-  pinMode(1,OUTPUT);
-  pinMode(2,OUTPUT);
-  pinMode(3,OUTPUT);
+  pinMode(4,INPUT);
+  pinMode(5,INPUT);
+  pinMode(2,INPUT);
+  pinMode(3,INPUT);
 
   digitalWrite(PIN_SPI_SS, HIGH);
   SPI.begin();
@@ -110,13 +110,24 @@ void serialEvent(){
 void update(){
   switch(run_state){
   case 0:
-    for(int i = 0; i< MOTORS; i++)L6480_run(1,12000);
+    for(int i = 0; i< MOTORS; i++){
+        L6480_select_motor(i);
+
+      L6480_run(1,12000);
+    }
     break;  
   case 1:
-    for(int i = 0; i< MOTORS; i++)L6480_run(1,3000);
+    for(int i = 0; i< MOTORS; i++){
+              L6480_select_motor(i);
+
+      L6480_run(1,3000);
+    }
     break; 
   default:
-    for(int i = 0; i< MOTORS; i++)L6480_softhiz();
+    for(int i = 0; i< MOTORS; i++){
+       L6480_select_motor(i);
+      L6480_softhiz();
+    }
   }
 }
 

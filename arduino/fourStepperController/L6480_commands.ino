@@ -304,7 +304,7 @@ long L6480_getparam(int add,int bytes){
       if(i == selectedMotor ){
         val = val | SPI.transfer(0x00); // アドレスもしくはデータ送信。
       } else {
-        SPI.transfer(0x00);
+        SPI.transfer(0);
       }
     }
     digitalWrite(PIN_SPI_SS, HIGH); // ~SSディスエーブル 
@@ -313,6 +313,6 @@ long L6480_getparam(int add,int bytes){
 }
 
 boolean is_motor_busy(){
- return digitalRead(selectedMotor); 
+ return digitalRead(selectedMotor+2); 
 }
 
