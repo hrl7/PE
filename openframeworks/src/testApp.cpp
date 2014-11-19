@@ -86,7 +86,7 @@ int testApp::readMotorAngle(){
       }
     }
   }
-  if(result != -1)cout << result << endl;
+  if(result != -1)cout << static_cast<std::bitset<8> >(result) << endl;
   return result;
 }
 
