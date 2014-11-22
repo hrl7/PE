@@ -52,6 +52,14 @@ void setup()
   delay(1000);
 }
 
+void reset(){
+    for(int i = 0; i< MOTORS; i++){
+    L6480_select_motor(i);
+    L6480_resetdevice(); //L6480リセット
+    L6480_setup();  //L6480を設定
+    L6480_getstatus();//フラグリセット
+  }
+}
 
 void loop(){
   for(int i = 0; i< MOTORS; i++){
@@ -66,6 +74,7 @@ void loop(){
      //     Serial.print("  ");
     // Serial.println(L6480_getparam_config(),HEX);
   */   
+    L6480_select_motor(i);
    send_pos(i,map(L6480_getparam_abspos() % 1600,0,1600,0,360));  
     
 }
@@ -107,11 +116,18 @@ void serialEvent(){
   int motorId = 0;
   int initCount = 0;
   int spd = 0;
+  int resetCount = 0;
   boolean isFirst = true;
   while (Serial.available () > 0) {
 
     buf = Serial.read();
-    if (buf == 0xff) {
+    if (buf == 0x00){
+        resetCount++;
+        if(resetCount > 3){
+           reset();
+          return; 
+        }
+    }else if (buf == 0xff) {
       initCount++;
     } 
     else if (initCount != 2) {
