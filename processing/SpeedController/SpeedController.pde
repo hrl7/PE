@@ -35,6 +35,11 @@ void setup() {
     indicator[i] = genMotorIndicator(i*140, 20, "angle_motor"+i);
     speedController[i] = genSpeedController(i*140, 250, "speed_motor"+i);
   }
+ cp5.addButton("reset")
+     .setPosition(400,300)
+     .setSize(50,20)
+
+     ;
 }
 
 Slider genSpeedController(int x, int y, String name) {
@@ -59,6 +64,17 @@ Knob genMotorIndicator(int x, int y, String name) {
                   ;
 }
 
+void reset(){
+    port.write(0x00);
+    port.write(0x00);
+    port.write(0x00);
+    port.write(0x00);
+    port.write(0x00);
+    port.write(0x00);
+    port.write(0x00);
+    port.write(0x00);
+}
+
 void draw() {
   background(myColorBackground);
   fill(knobValue);
@@ -74,7 +90,7 @@ void sendSpeed(int motor_id, int speed){
   port.write(0xff);
   port.write(buf);
   port.write(0xff & (speed << 1)); 
-  delay(10);
+  delay(5);
     port.write(0xff);
   port.write(0xff);
   port.write(buf);
@@ -83,7 +99,6 @@ void sendSpeed(int motor_id, int speed){
 
 void speed_motor0(int val){
   sendSpeed(0,val);
-
 }
 void speed_motor1(int val){
   sendSpeed(1,val);
