@@ -61,12 +61,15 @@ void loop(){
     Serial.print("#");
      Serial.print(i);
      Serial.print(" : ");
-     Serial.print(L6480_getparam_abspos(),DEC);
-     Serial.print("  ");
-     Serial.println(L6480_getparam_adcout(),HEX);
-     */
+     Serial.print(L6480_getparam_status(),BIN);
+     Serial.print(" config :");
+     Serial.println(L6480_getparam_config(),HEX);
+     //     Serial.print("  ");
+    // Serial.println(L6480_getparam_config(),HEX);
+  */   
    send_pos(i,map(L6480_getparam_abspos() / 1600,0,1600,0,360));  
-  }
+    
+}
   delay(1000);
 }
 
@@ -97,7 +100,7 @@ void L6480_setup(){
   L6480_setparam_alareen(0xde); //[R, WS]有効アラームdefault 0xff (1+1+1+1+1+1+1+1bit)
   L6480_setparam_gatecfg1(0x000);//[R, WH]geta driver configuration //default 0x000(1+3+3+5bit)
   L6480_setparam_gatecfg2(0x00);//[R, WH]geta driver configuration //default 0x00(3+5bit)
-  L6480_setparam_config(0x2b08); //[R, WH]各種設定default 0x2e88 (3+3+1+1+1+1+1+1+1+3bit)  
+  L6480_setparam_config(0x2a08); //[R, WH]各種設定default 0x2e88 (3+3+1+1+1+1+1+1+1+3bit)  
 }
 
 void serialEvent(){
