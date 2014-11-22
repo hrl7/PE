@@ -50,7 +50,6 @@ void setup()
   }
 
   delay(1000);
-  update();
 }
 
 
@@ -67,10 +66,10 @@ void loop(){
      //     Serial.print("  ");
     // Serial.println(L6480_getparam_config(),HEX);
   */   
-   send_pos(i,map(L6480_getparam_abspos() / 1600,0,1600,0,360));  
+   send_pos(i,map(L6480_getparam_abspos() % 1600,0,1600,0,360));  
     
 }
-  delay(1000);
+  delay(100);
 }
 
 long stepspeed(long k){//速度換算
@@ -104,36 +103,41 @@ void L6480_setup(){
 }
 
 void serialEvent(){
-  run_state = Serial.read();
-  update();
-}
+  int buf = 0;
+  int motorId = 0;
+  int initCount = 0;
+  int spd = 0;
+  boolean isFirst = true;
+  while (Serial.available () > 0) {
 
-/**
- * update all stepper's velocity
- */
-void update(){
-  switch(run_state){
-  case 0:
-    for(int i = 0; i< MOTORS; i++){
-        L6480_select_motor(i);
+    buf = Serial.read();
+    if (buf == 0xff) {
+      initCount++;
+    } 
+    else if (initCount != 2) {
+      return ;
+    } 
+    else {
+      if (isFirst) {
+        spd = (0x03 & buf) << 7;
+        motorId = buf >> 3;
+        //cout << "Position :" << static_cast<std::bitset<9> >(position) << endl;
 
-      L6480_run(1,12000);
-    }
-    break;  
-  case 1:
-    for(int i = 0; i< MOTORS; i++){
-              L6480_select_motor(i);
-
-      L6480_run(1,3000);
-    }
-    break; 
-  default:
-    for(int i = 0; i< MOTORS; i++){
-       L6480_select_motor(i);
-      L6480_softhiz();
+        isFirst = false;
+      } 
+      else {
+        spd = spd | (buf >> 1);
+        if (motorId<4){
+            L6480_select_motor(motorId);
+           L6480_run(1,spd*32); 
+        }
+      }
     }
   }
+
 }
+
+
 
 
 /**
@@ -144,6 +148,11 @@ void send_pos(int motor_id,int pos){
   int buf = motor_id << 3;
   buf = buf | pos >> 7;
   Serial.write(0xff);
+  Serial.write(0xff);
+  Serial.write(buf);
+  Serial.write(0xff & (pos << 1)); 
+  delay(5);
+    Serial.write(0xff);
   Serial.write(0xff);
   Serial.write(buf);
   Serial.write(0xff & (pos << 1)); 

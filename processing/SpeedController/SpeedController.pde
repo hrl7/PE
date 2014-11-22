@@ -74,10 +74,16 @@ void sendSpeed(int motor_id, int speed){
   port.write(0xff);
   port.write(buf);
   port.write(0xff & (speed << 1)); 
+  delay(10);
+    port.write(0xff);
+  port.write(0xff);
+  port.write(buf);
+  port.write(0xff & (speed << 1)); 
 }
 
 void speed_motor0(int val){
   sendSpeed(0,val);
+
 }
 void speed_motor1(int val){
   sendSpeed(1,val);
@@ -123,6 +129,9 @@ void readMotorPosition() {
       else {
         position = position | (buf >> 1);
         if (motorId<4)indicator[motorId].setValue(position%360);
+         print(motorId);
+         print(" : ");
+        println(position);
       }
     }
   }
