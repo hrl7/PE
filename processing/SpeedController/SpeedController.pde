@@ -143,7 +143,7 @@ void readMotorPosition() {
       } 
       else {
         position = position | (buf >> 1);
-        if (motorId<4)indicator[motorId].setValue(position%360);
+        if (motorId<4 && motorId != 0)indicator[motorId-1].setValue(position);
          print(motorId);
          print(" : ");
         println(position);

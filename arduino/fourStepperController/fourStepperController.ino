@@ -36,49 +36,37 @@ void setup()
   SPI.setDataMode(SPI_MODE3);
   SPI.setBitOrder(MSBFIRST);
   L6480_select_motor(0);
-  /*
-  while(!L6480_getstatus()){
-   Serial.println("Communication Error");
-   delay(1000);
-   }
-   */
+
   for(int i = 0; i< MOTORS; i++){
     L6480_select_motor(i);
     L6480_resetdevice(); //L6480リセット
     L6480_setup();  //L6480を設定
     L6480_getstatus();//フラグリセット
+    L6480_softstop();
   }
 
   delay(1000);
 }
 
 void reset(){
-    for(int i = 0; i< MOTORS; i++){
+  for(int i = 0; i< MOTORS; i++){
     L6480_select_motor(i);
     L6480_resetdevice(); //L6480リセット
     L6480_setup();  //L6480を設定
     L6480_getstatus();//フラグリセット
+    L6480_softstop();
   }
 }
 
 void loop(){
+  send_pos(0,99);
   for(int i = 0; i< MOTORS; i++){
     L6480_getstatus();
-/*
-    Serial.print("#");
-     Serial.print(i);
-     Serial.print(" : ");
-     Serial.print(L6480_getparam_status(),BIN);
-     Serial.print(" config :");
-     Serial.println(L6480_getparam_config(),HEX);
-     //     Serial.print("  ");
-    // Serial.println(L6480_getparam_config(),HEX);
-  */   
     L6480_select_motor(i);
-   send_pos(i,map(L6480_getparam_abspos() % 1600,0,1600,0,360));  
-    
-}
-  delay(100);
+    send_pos(i+1,map(L6480_getparam_abspos() % 1600,0,1600,0,360));  
+    delay(10);
+
+  }
 }
 
 long stepspeed(long k){//速度換算
@@ -93,7 +81,7 @@ void L6480_setup(){
   L6480_setparam_minspeed(0x01); //[R, WS]最小速度default 0x0000 (1+12bit) (0.238*val+[step/s])
   L6480_setparam_fsspd(0x027); //[R, WR]μステップからフルステップへの切替点速度default 0x027 (10bit) (15.25*val+7.63[step/s])
   L6480_setparam_kvalhold(0x6f); //[R, WR]停止時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
-  L6480_setparam_kvalrun(0x6f); //[R, WR]定速回転時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
+  L6480_setparam_kvalrun(0x8f); //[R, WR]定速回転時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
   L6480_setparam_kvalacc(0x6f); //[R, WR]加速時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
   L6480_setparam_kvaldec(0x6f); //[R, WR]減速時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
 
@@ -122,12 +110,13 @@ void serialEvent(){
 
     buf = Serial.read();
     if (buf == 0x00){
-        resetCount++;
-        if(resetCount > 3){
-           reset();
-          return; 
-        }
-    }else if (buf == 0xff) {
+      resetCount++;
+      if(resetCount > 3){
+        reset();
+        return; 
+      }
+    }
+    else if (buf == 0xff) {
       initCount++;
     } 
     else if (initCount != 2) {
@@ -137,15 +126,14 @@ void serialEvent(){
       if (isFirst) {
         spd = (0x03 & buf) << 7;
         motorId = buf >> 3;
-        //cout << "Position :" << static_cast<std::bitset<9> >(position) << endl;
 
         isFirst = false;
       } 
       else {
         spd = spd | (buf >> 1);
         if (motorId<4){
-            L6480_select_motor(motorId);
-           L6480_run(1,spd*32); 
+          L6480_select_motor(motorId);
+          L6480_run(1,spd*32); 
         }
       }
     }
@@ -167,9 +155,6 @@ void send_pos(int motor_id,int pos){
   Serial.write(0xff);
   Serial.write(buf);
   Serial.write(0xff & (pos << 1)); 
-  delay(5);
-    Serial.write(0xff);
-  Serial.write(0xff);
-  Serial.write(buf);
-  Serial.write(0xff & (pos << 1)); 
+
 }
+
