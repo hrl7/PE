@@ -7,7 +7,7 @@
 #define HOST "localhost" //ÈÄÅ‰ø°ÂÖà„Éõ„Çπ„Éà„ÅÆIP„ÇíË®≠ÂÆö
 //„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö
 #define PORT_receive 7000
-#define PORT_send1 5001 //ÈÄÅ‰ø°ÂÖà„ÅÆ„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö
+#define PORT_send1 55000 //ÈÄÅ‰ø°ÂÖà„ÅÆ„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö
 #define PORT_send22 8000 //ÈÄÅ‰ø°ÂÖà„ÅÆ„Éù„Éº„ÉàÁï™Âè∑„ÇíË®≠ÂÆö 
 
 class testApp : public ofBaseApp{

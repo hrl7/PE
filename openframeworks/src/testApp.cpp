@@ -32,6 +32,7 @@ void testApp::setup(){
 
 //--------------------------------------------------------------
 void testApp::update(){
+
   //„É°„ÉÉ„Çª„Éº„Ç∏„ÅÆÂèó„ÅëÂèñ„Çä
   ofxOscMessage m;
   //ÁèæÂú®È†ÜÁï™ÂæÖ„Å°„ÅÆOSC„É°„ÉÉ„Çª„Éº„Ç∏„Åå„ÅÇ„Çã„ÅãÁ¢∫Ë™ç
@@ -86,9 +87,12 @@ void testApp::receiveMotorAngleAndSendToGrassHopper(){
             } else {
                 position = position | (buf >> 1);
                 
-                cout << "Motor : #" << motorId << "  Position : " << position << endl;
                 
-                sendMotorAngle(motorId,position);
+                if(motorId > 0 && motorId < 5){
+                    sendMotorAngle(motorId,position);
+                    cout << "Motor : #" << motorId << "  Position : " << position << endl;
+
+                }
             }
         }
     }
@@ -96,7 +100,7 @@ void testApp::receiveMotorAngleAndSendToGrassHopper(){
 
 void testApp::sendMotorAngle(int motorId, int angle){
   ofxOscMessage m;
-    m.setAddress( "/motor_v" + ofToString(motorId) );
+    m.setAddress( "/motor" + ofToString(motorId) );
     m.addFloatArg( angle );
     sender.sendMessage( m );
 }

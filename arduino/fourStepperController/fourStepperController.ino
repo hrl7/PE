@@ -54,19 +54,24 @@ void setup()
 
 
 void loop(){
+  send_pos(0,map(L6480_getparam_abspos() % 1600,0,1600,0,360));  
+
   for(int i = 0; i< MOTORS; i++){
     L6480_getstatus();
-    
+    /*
     Serial.print("#");
      Serial.print(i);
-     Serial.print(" : ");
-     Serial.print(L6480_getstatus(),HEX);
+     //   Serial.print(" : ");
+     //   Serial.print(L6480_getstatus(),HEX);
      Serial.print("  ");
-     Serial.println(L6480_getparam_adcout(),HEX);
-     
-   // send_pos(i,map(L6480_getparam_abspos() / 1600,0,1600,0,360));  
+     Serial.print(map(L6480_getparam_abspos()%(128*1600),DEC);
+     */
+    send_pos(i+1,map(L6480_getparam_abspos()%25600,0,25600,0,360)); 
   }
-  delay(1000);
+  //Serial.print(map(L6480_getparam_abspos()%25600,0,25600,0,360),DEC);
+
+  delay(10);
+
 }
 
 long stepspeed(long k){//速度換算
@@ -80,8 +85,8 @@ void L6480_setup(){
   L6480_setparam_maxspeed(0x45); //[R, WR]最大速度default 0x041 (10bit) (15.25*val+15.25[step/s])
   L6480_setparam_minspeed(0x01); //[R, WS]最小速度default 0x0000 (1+12bit) (0.238*val+[step/s])
   L6480_setparam_fsspd(0x027); //[R, WR]μステップからフルステップへの切替点速度default 0x027 (10bit) (15.25*val+7.63[step/s])
-  L6480_setparam_kvalhold(0x6f); //[R, WR]停止時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
-  L6480_setparam_kvalrun(0x6f); //[R, WR]定速回転時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
+  L6480_setparam_kvalhold(0x7f); //[R, WR]停止時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
+  L6480_setparam_kvalrun(0x7f); //[R, WR]定速回転時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
   L6480_setparam_kvalacc(0x6f); //[R, WR]加速時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
   L6480_setparam_kvaldec(0x6f); //[R, WR]減速時励磁電圧default 0x29 (8bit) (Vs[V]*val/256)
 
@@ -96,7 +101,7 @@ void L6480_setup(){
   L6480_setparam_alareen(0xde); //[R, WS]有効アラームdefault 0xff (1+1+1+1+1+1+1+1bit)
   L6480_setparam_gatecfg1(0x000);//[R, WH]geta driver configuration //default 0x000(1+3+3+5bit)
   L6480_setparam_gatecfg2(0x00);//[R, WH]geta driver configuration //default 0x00(3+5bit)
-  L6480_setparam_config(0x2b08); //[R, WH]各種設定default 0x2e88 (3+3+1+1+1+1+1+1+1+3bit)  
+  L6480_setparam_config(0x2a08); //[R, WH]各種設定default 0x2e88 (3+3+1+1+1+1+1+1+1+3bit)  
 }
 
 void serialEvent(){
@@ -111,22 +116,20 @@ void update(){
   switch(run_state){
   case 0:
     for(int i = 0; i< MOTORS; i++){
-        L6480_select_motor(i);
-
-      L6480_run(1,12000);
+      L6480_select_motor(i);
+      L6480_run(1,1000);
     }
     break;  
   case 1:
     for(int i = 0; i< MOTORS; i++){
-              L6480_select_motor(i);
-
-      L6480_run(1,3000);
+      L6480_select_motor(i);
+      L6480_run(1,5000);
     }
     break; 
   default:
     for(int i = 0; i< MOTORS; i++){
-       L6480_select_motor(i);
-      L6480_softhiz();
+      L6480_select_motor(i);
+      L6480_softstop();
     }
   }
 }
@@ -144,3 +147,5 @@ void send_pos(int motor_id,int pos){
   Serial.write(buf);
   Serial.write(0xff & (pos << 1)); 
 }
+
+
